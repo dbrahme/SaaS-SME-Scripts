@@ -18,15 +18,20 @@ runBashPrompt() {
         read -p "Enter Infoblox AS number: " INFOBLOX_AS
     fi
 
-    export VTI_IP LOCAL_ID PSK_SECRET SERVICE_IP CLOUD_IP PRIMARY_IP SECONDARY_IP ROUTING_TYPE VYOS_AS INFOBLOX_AS REMOTE_ID
+    export VTI_IP LOCAL_ID REMOTE_ID PSK_SECRET SERVICE_IP CLOUD_IP PRIMARY_IP SECONDARY_IP ROUTING_TYPE VYOS_AS INFOBLOX_AS
 }
 
 runBashPrompt
 
+# VTI_IP: append /32 only if not already present
+if [[ "$VTI_IP" != */* ]]; then
+    VTI_IP="${VTI_IP}/32"
+fi
+
 configure
 
 # IPsec tunnel and authentication setup
-set interfaces vti vti0 address "${VTI_IP}/32"
+set interfaces vti vti0 address "$VTI_IP"
 set vpn ipsec authentication psk niosxaas-identity id "$LOCAL_ID"
 set vpn ipsec authentication psk niosxaas-identity secret "$PSK_SECRET"
 
@@ -80,12 +85,12 @@ elif [[ "$ROUTING_TYPE" == "dynamic" ]]; then
     set protocols bgp address-family ipv4-unicast network 10.0.0.0/8
     set protocols bgp neighbor "$PRIMARY_IP" address-family ipv4-unicast
     set protocols bgp neighbor "$PRIMARY_IP" remote-as "$INFOBLOX_AS"
-    set protocols bgp neighbor "$PRIMARY_IP" update-source "$VTI_IP"
+    set protocols bgp neighbor "$PRIMARY_IP" update-source "${VTI_IP%%/*}"
     set protocols bgp neighbor "$SECONDARY_IP" address-family ipv4-unicast
     set protocols bgp neighbor "$SECONDARY_IP" remote-as "$INFOBLOX_AS"
-    set protocols bgp neighbor "$SECONDARY_IP" update-source "$VTI_IP"
+    set protocols bgp neighbor "$SECONDARY_IP" update-source "${VTI_IP%%/*}"
     set protocols bgp neighbor "$PRIMARY_IP" ebgp-multihop 2
-    set protocols bgp parameters router-id "$VTI_IP"
+    set protocols bgp parameters router-id "${VTI_IP%%/*}"
     set protocols static route "${PRIMARY_IP}/32" interface vti0
 else
     echo "Invalid routing type specified. Skipping routing configuration."
