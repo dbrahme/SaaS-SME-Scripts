@@ -65,7 +65,7 @@ set vpn ipsec site-to-site peer niosxaas-s2s remote-address "$CLOUD_IP"
 set vpn ipsec site-to-site peer niosxaas-s2s tunnel 1 local prefix 0.0.0.0/0
 set vpn ipsec site-to-site peer niosxaas-s2s tunnel 1 remote prefix 0.0.0.0/0
 
-# VTI binding
+# VTI interface binding
 set vpn ipsec site-to-site peer niosxaas-s2s vti bind vti0
 set vpn ipsec site-to-site peer niosxaas-s2s vti esp-group niosxaas-esp
 
