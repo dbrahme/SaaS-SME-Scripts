@@ -9,8 +9,8 @@ runBashPrompt() {
     read -p "Enter PSK Secret: " PSK_SECRET
     read -p "Enter Service IP (used for protocol services): " SERVICE_IP
     read -p "Enter Cloud Service IP address: " CLOUD_IP
-    read -p "Enter Primary Neighbor IP: " PRIMARY_IP
-    read -p "Enter Secondary Neighbor IP: " SECONDARY_IP
+    read -p "Enter Primary Source IP: " PRIMARY_IP
+    read -p "Enter Secondary Source IP: " SECONDARY_IP
     read -p "Do you want to configure Static or Dynamic (BGP) routing? [static/dynamic]: " ROUTING_TYPE
 
     if [[ "$ROUTING_TYPE" == "dynamic" ]]; then
